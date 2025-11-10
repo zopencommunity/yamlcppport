@@ -1,5 +1,5 @@
-# bump: yaml-cpp-version /YAML-CPP_VERSION="(.*)"/ https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.8.0.tar.gz|semver:*
-YAML-CPP_VERSION="0.8.0"
+# bump: yaml-cpp-version /YAML_CPP_VERSION="(.*)"/ https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.8.0.tar.gz|semver:*
+YAML_CPP_VERSION="0.8.0"
 
 ###
 ### Build control file for the yaml-cpp port
@@ -55,7 +55,7 @@ zopen_check_results() {
 }
 
 zopen_get_version() {
-  echo $YAML-CPP_VERSION # Modify to echo the version of your tool/library
+  echo $YAML_CPP_VERSION # Modify to echo the version of your tool/library
 }
 
 
