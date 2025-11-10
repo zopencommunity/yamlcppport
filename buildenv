@@ -1,0 +1,137 @@
+# bump: yaml-cpp-version /YAML-CPP_VERSION="(.*)"/ https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.8.0.tar.gz|semver:*
+YAML-CPP_VERSION="0.8.0"
+
+###
+### Build control file for the yaml-cpp port
+###
+
+###
+### Required Environment Variables
+###
+export ZOPEN_BUILD_LINE="STABLE"
+export ZOPEN_STABLE_URL="https://github.com/jbeder/yaml-cpp/archive/refs/tags/0.8.0.tar.gz"
+export ZOPEN_STABLE_DEPS="make cmake grep gawk"
+export ZOPEN_DEV_URL="https://github.com/jbeder/yaml-cpp/archive/refs/heads/master.tar.gz"
+export ZOPEN_DEV_DEPS="make cmake"
+export ZOPEN_CATEGORIES="library"
+export ZOPEN_RUNTIME_DEPS=""
+export ZOPEN_BUILD_SYSTEM="CMake"
+export ZOPEN_CONFIGURE="cmake"
+export ZOPEN_EXTRA_CONFIGURE_OPTS="-B ../build -DYAML_CPP_BUILD_TESTS=ON -DBUILD_TESTING=ON -DINSTALL_GTEST=OFF"
+export ZOPEN_MAKE_OPTS="-C ../build"
+export ZOPEN_CHECK_OPTS="-C ../build test"
+export ZOPEN_INSTALL_OPTS="-C ../build install"
+export ZOPEN_CLEAN="skip"
+export ZOPEN_EXTRA_CXXFLAGS="-Wno-c++11-narrowing"
+
+
+# export ZOPEN_SYSTEM_PREREQ="zos25" # optional system pre-req (default=zos25)
+
+
+###
+### Build settings (Port type: BUILD, Build system: GNU Make)
+###
+### Optional Settings for GNU Make build system (Autotools)
+#export ZOPEN_EXTRA_CONFIGURE_OPTS="--with-ssl" # Add any additional configure options here
+#export ZOPEN_EXTRA_CFLAGS="-mzos-target=zosv2r5" # Add any additional compiler options here
+
+
+###
+### Required user-supplied functions
+###
+
+zopen_check_results() {
+  dir="$1" 
+  pfx="$2" 
+  chk="$1/$2_check.log"
+  # Add logic to extract the test results here:
+  actualFailures=$(grep -E '^[[:space:]]*[0-9]+/[0-9]+[[:space:]]+Test[[:space:]]+#' $chk | awk '$(NF-2) ~ /\*\*\*Failed/ { count++ } END { print count+0 }')
+  actualPasses=$(grep -E '^[[:space:]]*[0-9]+/[0-9]+[[:space:]]+Test[[:space:]]+#' $chk | awk '$(NF-2) == "Passed" { count++ } END { print count+0 }')
+  totalTests=$(grep -E '^[[:space:]]*[0-9]+/[0-9]+[[:space:]]+Test[[:space:]]+#' $chk | wc -l)
+  echo "actualFailures:$actualFailures"
+  echo "totalTests:$totalTests"
+  echo "expectedFailures:0"
+  echo "expectedTotalTests:1"
+}
+
+zopen_get_version() {
+  echo $YAML-CPP_VERSION # Modify to echo the version of your tool/library
+}
+
+
+###
+### Custom Build Logic (if applicable)
+###
+# For libraries, this hook exports variables for other ports to use.
+zopen_append_to_env() {
+  cat <<EOF
+if [ ! -z "\$ZOPEN_IN_ZOPEN_BUILD" ]; then
+  export ZOPEN_EXTRA_CFLAGS="\${ZOPEN_EXTRA_CFLAGS} -I\${PWD}/include"
+  export ZOPEN_EXTRA_CXXFLAGS="\${ZOPEN_EXTRA_CXXFLAGS} -I\${PWD}/include"
+  export ZOPEN_EXTRA_LDFLAGS="\${ZOPEN_EXTRA_LDFLAGS} -L\${PWD}/lib"
+  export ZOPEN_EXTRA_LIBS="\${ZOPEN_EXTRA_LIBS} -lyaml-cpp"
+fi
+EOF
+}
+
+###
+### Optional User-Supplied Hooks (uncomment to use)
+###
+
+#zopen_append_to_env() {
+#  ## This function runs as part of generation of the .env file. The output of the
+#  ## function is appended to .env.
+#}
+#
+#zopen_append_to_setup(){
+#  ## This function runs as part of generation of the setup.sh file. The output of
+#  ## the function is appended to setup.sh.
+#}
+#
+#zopen_append_to_validate_install(){
+#  ## This function runs as part of generation of the install_test.sh file. The
+#  ## output of the function is appended to install_test.sh script.
+#}
+#
+#zopen_install_caveats(){
+#  ## This function is run post install. All stdout messages are captured and
+#  ## added to the metadata.json as installation caveats.
+#}
+#
+#zopen_init(){
+#  ## This function runs after code is downloaded and patched but before the code
+#  ## is built.
+#}
+#
+#zopen_post_buildenv(){
+#  ## This function runs after the 'buildenv' is processed.
+#}
+#
+#zopen_pre_build(){
+#  ## This function runs before the 'make' step of the build is run.
+#}
+#
+#zopen_pre_check(){
+#  ## This function runs before the 'check' step of the build is run.
+#}
+#
+#zopen_pre_configure(){
+#  ## This function runs before the 'configure' step of the build is run.
+#}
+#
+#zopen_pre_install(){
+#  ## This function runs before the 'install' step of the build is run.
+#}
+#
+#zopen_post_install(){
+#  ## This function runs after the 'install' step of the build is run.
+#}
+#
+#zopen_pre_patch(){
+#  ## This function runs before the 'patch' step of the build is run.
+#}
+#
+#zopen_pre_terminate(){
+#  ## This function runs before 'zopen build' terminates.
+#}
+

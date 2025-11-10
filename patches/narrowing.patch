@@ -1,0 +1,13 @@
+diff --git a/test/binary_test.cpp b/test/binary_test.cpp
+index 7b17823..49e990e 100644
+--- a/test/binary_test.cpp
++++ b/test/binary_test.cpp
+@@ -8,7 +8,7 @@ TEST(BinaryTest, DecodingSimple) {
+ }
+ 
+ TEST(BinaryTest, DecodingNoCrashOnNegative) {
+-  std::string input{-58, -1, -99, 109};
++  std::string input{static_cast<char>(-58), static_cast<char>(-1), static_cast<char>(-99), 109};
+   const std::vector<unsigned char> &result = YAML::DecodeBase64(input);
+   EXPECT_TRUE(result.empty());
+ }
